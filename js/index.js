@@ -13,6 +13,9 @@ $(function() {
 			this.eventFn();
 			this.startCycleLocate();
 		},
+		addMark: function() {
+
+		},
 		initMap: function() {
 			map = new AMap.Map('container', {
 				center: [116.408075, 39.950187],
@@ -60,18 +63,29 @@ $(function() {
 			//			});
 			if(map) { //定位
 				$.fn.locate(map, null, function(data) {
-					var str = ['定位成功'];
-					str.push('经度：' + data.position.getLng());
-					str.push('纬度：' + data.position.getLat());
-					str.push("地址:" + data.formattedAddress);
-					if(data.accuracy) {
-						str.push('精度：' + data.accuracy + ' 米');
-					} //如为IP精确定位结果则没有精度信息
-					str.push('是否经过偏移：' + (data.isConverted ? '是' : '否'));
-					$("#info-zone").html(str.join('<br>'));
-				}, function() {
-                    $("#info-zone").html("定位失败");
-				});
+						var str = ['定位成功'];
+						str.push('经度：' + data.position.getLng());
+						str.push('纬度：' + data.position.getLat());
+						str.push("地址:" + data.formattedAddress);
+						if(data.accuracy) {
+							str.push('精度：' + data.accuracy + ' 米');
+						} //如为IP精确定位结果则没有精度信息
+						str.push('是否经过偏移：' + (data.isConverted ? '是' : '否'));
+						$("#info-zone").html(str.join('<br>'));
+						$.fn.addMark(map, {
+							position: [data.position.getLng(), data.position.getLat()],
+							content: "<div>"+data.formattedAddress+"</div><div><img src='http://webapi.amap.com/images/car.png'/></div>",
+							draggable: true,
+							cursor: 'move',
+							raiseOnDrag: true,
+//							icon: "http://webapi.amap.com/images/car.png",
+							offset: new AMap.Pixel(-26, -13),
+							autoRotation: true,
+						});
+					},
+					function() {
+						$("#info-zone").html("定位失败");
+					});
 			}
 		},
 		endCycleLocate: function() { // 结束周期性定位
